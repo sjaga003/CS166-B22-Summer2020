@@ -305,7 +305,65 @@ public class MechanicShop{
 	}//end readChoice
 	
 	public static void AddCustomer(MechanicShop esql){//1
-		
+		try{
+         		String query = "INSERT INTO customer(fname, lname, phone, address) VALUES ";
+			String fname = "";
+			String lname = "";
+			String phone = "";
+			String address = "";
+			boolean isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter First Name: ");
+         			fname = in.readLine();
+				if(fname.length() > 0 && fname.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Last Name: ");
+         			lname = in.readLine();
+				if(lname.length() > 0 && lname.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Phone Number: ");
+         			phone = in.readLine();
+				if(phone.length() > 0 && phone.length() <= 13) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Address: ");
+         			address = in.readLine();
+				if(address.length() > 0 && address.length() <= 256) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			String input = "(\'" + fname + "\', \'" + lname + "\', \'" + phone + "\', \'" + address + "\')";
+         		query += input;
+
+         		int rowCount = esql.executeQuery(query);
+         		System.out.println ("total row(s): " + rowCount);
+      		}catch(Exception e){
+         		System.err.println (e.getMessage());
+      		}
 	}
 	
 	public static void AddMechanic(MechanicShop esql){//2
