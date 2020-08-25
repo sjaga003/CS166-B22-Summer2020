@@ -512,7 +512,7 @@ public class MechanicShop{
 		try {
 			boolean isValid = false;
 			String lname = "";
-
+			int listChoice = -1;
 			while(!isValid) {
          			System.out.print("\tEnter Customer's Last Name: ");
 				lname = in.readLine();
@@ -531,7 +531,6 @@ public class MechanicShop{
 					String listString = i + ". " + checkResult.get(i).get(1).replaceAll("\\s", "") + " " + checkResult.get(i).get(2).replaceAll("\\s", "") + ", Phone#:" + checkResult.get(i).get(3).replaceAll("\\s", "") + ", Address:" + checkResult.get(i).get(4).replaceAll("\\s++$", "");			
 					System.out.println(listString);
 				}
-				int listChoice = -1;
 				boolean listValid = false; 
 				while(!listValid) {
 					try {
@@ -549,6 +548,13 @@ public class MechanicShop{
 				}
 				System.out.println(listChoice);
 					
+			}
+			else {//No lname found, offer to make a new customer
+				while(!isValid) {
+					System.out.println("Did not find any customers with that last name");
+					System.out.println("Add a new customer? (Y/N)");
+					
+				}
 			}		
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
