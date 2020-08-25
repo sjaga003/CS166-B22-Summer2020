@@ -42,3 +42,4 @@ CREATE TRIGGER MechanicIdTrigger
 BEFORE INSERT
 ON mechanic FOR EACH ROW
 EXECUTE PROCEDURE set_mech_id();
+

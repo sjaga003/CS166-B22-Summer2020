@@ -427,7 +427,84 @@ public class MechanicShop{
 	}
 	
 	public static void AddCar(MechanicShop esql){//3
-		
+		try{
+         		String query = "INSERT INTO car(vin, make, model, year) VALUES ";
+			String vin = "";
+			String make = "";
+			String model = "";
+			String year = "";
+			int inDatabase = 0;
+			boolean isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Vehicle Identification Number: ");
+         			vin = in.readLine();
+				if(vin.length() > 0 && vin.length() <= 16) {
+					String check = "SELECT * FROM car WHERE vin=\'" + vin + "\'";
+					inDatabase = esql.executeQuery(check);
+					if(inDatabase == 0) {
+						isValid = true;
+					}
+					else {
+						System.out.println("This ID is already in the database, please try again");
+					}
+				}
+				else {
+ 					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Make: ");
+         			make = in.readLine();
+				if(make.length() > 0 && make.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Model: ");
+         			model = in.readLine();
+				if(model.length() > 0 && model.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Year: ");
+         			year = in.readLine();
+				if(year.length() > 0) {
+					try {
+						int value = Integer.parseInt(year);
+						if(value >= 1970) {
+							isValid = true;
+						}
+						else {
+							System.out.println("Invalid input, please try again");
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("Invalid input, please try again");
+					}
+					
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}	
+			isValid = false;
+			String input = "(\'" + vin + "\', \'" + make + "\', \'" + model + "\', \'" + year + "\')";
+         		query += input;
+
+         		esql.executeUpdate(query);
+			esql.executeQueryAndPrintResult("SELECT * FROM car");
+      		}catch(Exception e){
+         		System.err.println (e.getMessage());
+      		}
 	}
 	
 	public static void InsertServiceRequest(MechanicShop esql){//4
