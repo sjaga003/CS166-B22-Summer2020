@@ -359,15 +359,71 @@ public class MechanicShop{
 			String input = "(\'" + fname + "\', \'" + lname + "\', \'" + phone + "\', \'" + address + "\')";
          		query += input;
 
-         		int rowCount = esql.executeQuery(query);
-         		System.out.println ("total row(s): " + rowCount);
+         		esql.executeUpdate(query);
       		}catch(Exception e){
          		System.err.println (e.getMessage());
       		}
 	}
 	
 	public static void AddMechanic(MechanicShop esql){//2
-		
+		try{
+         		String query = "INSERT INTO mechanic(fname, lname, experience) VALUES ";
+			String fname = "";
+			String lname = "";
+			String experience = "";
+			boolean isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter First Name: ");
+         			fname = in.readLine();
+				if(fname.length() > 0 && fname.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Last Name: ");
+         			lname = in.readLine();
+				if(lname.length() > 0 && lname.length() <= 32) {
+					isValid = true;
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			while(!isValid) {
+         			System.out.print("\tEnter Years of Experience: ");
+         			experience = in.readLine();
+				if(experience.length() > 0) {
+					try {
+						int value = Integer.parseInt(experience);
+						if(value >= 0 && value < 100) {
+							isValid = true;
+						}
+						else {
+							System.out.println("Invalid input, please try again");
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("Invalid input, please try again");
+					}
+					
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}	
+			isValid = false;
+			String input = "(\'" + fname + "\', \'" + lname + "\', " + experience + ")";
+         		query += input;
+
+         		esql.executeUpdate(query);
+			esql.executeQueryAndPrintResult("SELECT * FROM mechanic");
+      		}catch(Exception e){
+         		System.err.println (e.getMessage());
+      		}
 	}
 	
 	public static void AddCar(MechanicShop esql){//3
