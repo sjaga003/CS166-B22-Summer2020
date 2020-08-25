@@ -360,6 +360,7 @@ public class MechanicShop{
          		query += input;
 
          		esql.executeUpdate(query);
+			esql.executeQueryAndPrintResult("SELECT * FROM customer");
       		}catch(Exception e){
          		System.err.println (e.getMessage());
       		}
@@ -508,7 +509,50 @@ public class MechanicShop{
 	}
 	
 	public static void InsertServiceRequest(MechanicShop esql){//4
-		
+		try {
+			boolean isValid = false;
+			String lname = "";
+
+			while(!isValid) {
+         			System.out.print("\tEnter Customer's Last Name: ");
+				lname = in.readLine();
+				if(lname.length() > 0 && lname.length() <= 32) {
+					isValid = true;			
+				}
+				else {
+					System.out.println("Invalid input, please try again");
+				}
+			}
+			isValid = false;
+			String checkLname = "SELECT * FROM customer WHERE customer.lname=\'" + lname + "\'";
+			List<List<String>> checkResult = esql.executeQueryAndReturnResult(checkLname);
+			if(checkResult.size() > 0) { //Multiple returns for lastname
+				for(int i = 0; i < checkResult.size(); i++) {
+					String listString = i + ". " + checkResult.get(i).get(1).replaceAll("\\s", "") + " " + checkResult.get(i).get(2).replaceAll("\\s", "") + ", Phone#:" + checkResult.get(i).get(3).replaceAll("\\s", "") + ", Address:" + checkResult.get(i).get(4).replaceAll("\\s++$", "");			
+					System.out.println(listString);
+				}
+				int listChoice = -1;
+				boolean listValid = false; 
+				while(!listValid) {
+					try {
+						System.out.print("\tSelect the customer number: ");
+						listChoice = Integer.parseInt(in.readLine());
+						if(listChoice > 0 && listChoice < checkResult.size()) {
+							listValid = true;
+						}
+						else {
+							System.out.println("Invalid option selected, please try again");
+						}
+					} catch(Exception e) {
+						System.out.println("Invalid option selected, please try again");
+					}
+				}
+				System.out.println(listChoice);
+					
+			}		
+		} catch(Exception e) {
+			System.err.println(e.getMessage());
+		}	
 	}
 	
 	public static void CloseServiceRequest(MechanicShop esql) throws Exception{//5
