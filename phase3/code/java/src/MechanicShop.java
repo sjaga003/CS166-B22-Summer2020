@@ -427,7 +427,7 @@ public class MechanicShop{
       		}
 	}
 	
-	public static void AddCar(MechanicShop esql){//3
+	public static void AddCar(MechanicShop esql, int recentId){//3
 		try{
          		String query = "INSERT INTO car(vin, make, model, year) VALUES ";
 			String vin = "";
@@ -502,6 +502,27 @@ public class MechanicShop{
          		query += input;
 
          		esql.executeUpdate(query);
+			
+			if(recentId >= 0) {
+				String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + recentId + "\', \'" + vin + "\')";
+				esql.executeUpdate(ownsQuery);
+			}
+			else {
+				System.out.print("\tIs this an existing customer's car? [Y/N] ";
+				String cont = in.readLine();
+                                if(cont.equals("Y")) {
+					System.out.print("\tEnter customer's last name: ");
+					String lname = in.readLine();
+					String queryLname = "SELECT * FROM customer WHERE lname = \'" + lname + "\'";
+				}
+				else {
+				
+				}
+					
+
+			}
+					
+			
 			esql.executeQueryAndPrintResult("SELECT * FROM car");
       		}catch(Exception e){
          		System.err.println (e.getMessage());
@@ -536,7 +557,7 @@ public class MechanicShop{
 					try {
 						System.out.print("\tSelect the customer number: ");
 						listChoice = Integer.parseInt(in.readLine());
-						if(listChoice > 0 && listChoice < checkResult.size()) {
+						if(listChoice >= 0 && listChoice < checkResult.size()) {
 							listValid = true;
 						}
 						else {
@@ -553,9 +574,25 @@ public class MechanicShop{
 				while(!isValid) {
 					System.out.println("Did not find any customers with that last name");
 					System.out.println("Add a new customer? (Y/N)");
-					
+					String cont = in.readLine();
+					if(cont.equals("Y")) {
+						AddCustomer(esql);
+						int mostRecent = esql.getCurrSeqVal("customer_id");
+						String newCustomerQuery = "SELECT * FROM customer WHERE Customer.id=" + mostRecent;
+						List<List<String>> newResult = esql.executeQueryAndReturnResult(newCustomerQuery);
+						checkResult.add(newResult.get(0));
+						isValid = true;
+						listChoice = 0;	
+					}
+					else if (cont.equals("N")) {
+						System.out.println("No new customer added, cancelling service request");
+						return;
+					}	
 				}
-			}		
+			}
+			
+
+			System.out.println(listChoice);		
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
 		}	
