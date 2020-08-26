@@ -23,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -648,12 +650,13 @@ public class MechanicShop{
 					boolean listValid = false;
 					while(!listValid) {
 						try {
-							System.out.print("\tSelect the customer number: ");
+							System.out.print("\tSelect the car number: ");
 							
 							int carChoice = -1;
 							carChoice = Integer.parseInt(in.readLine());
 							if(carChoice >= 0 && carChoice < carsOwnedResult.size()) {
 								listValid = true;
+								vin = carsOwnedResult.get(carChoice).get(0);
 							}
 							else {
 								System.out.println("Invalid option selected, please try again");
@@ -685,7 +688,7 @@ public class MechanicShop{
 			int odometer = -1;
 			isValid = false;
 			while(!isValid) {
-				System.out.println("\tEnter the odometer reading of the car: ");
+				System.out.print("\tEnter the odometer reading of the car: ");
 				try {
 					odometer = Integer.parseInt(in.readLine());
                                 	if(odometer >= 0) {
@@ -703,21 +706,37 @@ public class MechanicShop{
 			
 			String complaint = "";
 			while(!isValid) {
+				System.out.print("\tEnter customer complaint: ");
 				complaint = in.readLine();
 				if(complaint.length() != 0) {
 					isValid = true;
 				}
+				else {
+					System.out.println("Invalid customer complaint");
+				}
 			}
-			System.out.println(odometer);
-			System.out.println(complaint);
 			
+			DateTimeFormatter dt = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+			LocalDateTime dtNow = LocalDateTime.now();
+			
+			int ownsId = esql.getCurrSeqVal("owns_id");
+			String insertOwnsQuery = "SELECT O.car_vin FROM owns O WHERE O.ownership_id = " + ownsId;
+			vin = esql.executeQueryAndReturnResult(insertOwnsQuery).get(0).get(0);
+			
+			String insertSrQuery = "INSERT INTO Service_Request(customer_id, car_vin, date, odometer, complain) VALUES (" + checkResult.get(listChoice).get(0) + ", \'" + vin + "\', \'" + dt.format(dtNow) + "\', " + odometer + ", \'" + complaint + "\')";
+			esql.executeUpdate(insertSrQuery);
+			esql.executeQueryAndPrintResult("SELECT * FROM Service_Request");	
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
 		}	
 	}
 	
 	public static void CloseServiceRequest(MechanicShop esql) throws Exception{//5
+		try {
 		
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}	
 	}
 	
 	public static void ListCustomersWithBillLessThan100(MechanicShop esql){//6
