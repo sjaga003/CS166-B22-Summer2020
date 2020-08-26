@@ -723,7 +723,8 @@ public class MechanicShop{
 			int ownsId = Integer.parseInt(idTab.get(0).get(0));
 			String insertOwnsQuery = "SELECT O.car_vin FROM owns O WHERE O.ownership_id = " + ownsId;
 			vin = esql.executeQueryAndReturnResult(insertOwnsQuery).get(0).get(0);
-			
+			System.out.println(checkResult.get(listChoice));
+				
 			String insertSrQuery = "INSERT INTO Service_Request(customer_id, car_vin, date, odometer, complain) VALUES (" + checkResult.get(listChoice).get(0) + ", \'" + vin + "\', \'" + dt.format(dtNow) + "\', " + odometer + ", \'" + complaint + "\')";
 			esql.executeUpdate(insertSrQuery);
 			esql.executeQueryAndPrintResult("SELECT * FROM Service_Request");	
@@ -741,8 +742,7 @@ public class MechanicShop{
 		
 			String getSrQuery = "SELECT * FROM Service_Request S WHERE S.rid NOT IN (SELECT C.rid FROM Closed_Request C)";
 			List<List<String>> srResult = esql.executeQueryAndReturnResult(getSrQuery);
-			
-			if(srResult.size() == 0) {
+			if(srResult.isEmpty()) {
 				System.out.println("All Service Requests are closed");
 				return;
 			}
@@ -808,17 +808,16 @@ public class MechanicShop{
 
 			}
 			
-			String crQuery = "INSERT INTO Closed_Request(rid, mid, date, comment, bill) VALUES (" + srId + ", " + mechId + ", \'" + dt.format(dtNow) + "\', \'" + comment + "\', " + bill + ")";
+			String crQuery = "INSERT INTO Closed_Request(rid, mid, date, comment, bill) VALUES (" + srResult.get(srId).get(0) + ", " + mechId + ", \'" + dt.format(dtNow) + "\', \'" + comment + "\', " + bill + ")";
 			esql.executeUpdate(crQuery);
 			esql.executeQueryAndPrintResult("SELECT * FROM Closed_Request");
-		
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}	
 	}
 	
 	public static void ListCustomersWithBillLessThan100(MechanicShop esql){//6
-		
+			
 	}
 	
 	public static void ListCustomersWithMoreThan20Cars(MechanicShop esql){//7
