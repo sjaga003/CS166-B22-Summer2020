@@ -262,7 +262,7 @@ public class MechanicShop{
 				switch (readChoice()){
 					case 1: AddCustomer(esql); break;
 					case 2: AddMechanic(esql); break;
-					case 3: AddCar(esql); break;
+					case 3: AddCar(esql, -1); break;
 					case 4: InsertServiceRequest(esql); break;
 					case 5: CloseServiceRequest(esql); break;
 					case 6: ListCustomersWithBillLessThan100(esql); break;
@@ -508,22 +508,58 @@ public class MechanicShop{
 				esql.executeUpdate(ownsQuery);
 			}
 			else {
-				System.out.print("\tIs this an existing customer's car? [Y/N] ";
+				List<List<String>> checkResult = esql.executeQueryAndReturnResult("SELECT * FROM customer WHERE lname = \'alskdjfklfjafkldjadf\'");
+
+				System.out.print("\tIs this an existing customer's car? [Y/N] ");
+				
 				String cont = in.readLine();
-                                if(cont.equals("Y")) {
-					System.out.print("\tEnter customer's last name: ");
-					String lname = in.readLine();
-					String queryLname = "SELECT * FROM customer WHERE lname = \'" + lname + "\'";
+
+                               	if(cont.equals("Y")) {
+					while(checkResult.size() == 0) {
+						System.out.print("\tEnter customer's last name: ");
+						String lname = in.readLine();
+						String queryLname = "SELECT * FROM customer WHERE lname = \'" + lname + "\'";
+						checkResult = esql.executeQueryAndReturnResult(queryLname);
+						
+						if(checkResult.size() == 0) {
+							System.out.println("Last name not found, try again");
+						}
+					}
+					for(int i = 0; i < checkResult.size(); i++) {
+                                        	String listString = i + ". " + checkResult.get(i).get(1).replaceAll("\\s", "") + " " + checkResult.get(i).get(2).replaceAll("\\s", "") + ", Phone#:" + checkResult.get(i).get(3).replaceAll("\\s", "") + ", Address:" + checkResult.get(i).get(4).replaceAll("\\s++$", "");
+                                        System.out.println(listString);
+                                	}
+				
+					int listChoice = -1;	
+					boolean listValid = false; 
+					while(!listValid) {
+						try {
+							System.out.print("\tSelect the customer number: ");
+							listChoice = Integer.parseInt(in.readLine());
+							if(listChoice >= 0 && listChoice < checkResult.size()) {
+								listValid = true;
+							}
+							else {
+								System.out.println("Invalid option selected, please try again");
+							}
+							} catch(Exception e) {
+								System.out.println("Invalid option selected, please try again");
+							}
+					}
+					System.out.println(listChoice);
+					int cid = listChoice;
+					String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + checkResult.get(cid).get(0) + "\', \'" + vin + "\')";
+					
+					esql.executeUpdate(ownsQuery);	
 				}
 				else {
-				
-				}
-					
+					System.out.println("Add customer");
+				}	
 
 			}
 					
 			
-			esql.executeQueryAndPrintResult("SELECT * FROM car");
+			//esql.executeQueryAndPrintResult("SELECT * FROM car");
       		}catch(Exception e){
          		System.err.println (e.getMessage());
       		}
@@ -589,10 +625,92 @@ public class MechanicShop{
 						return;
 					}	
 				}
+				isValid = false;
+			}
+			
+			
+			String vin = "";
+			
+			String carsOwnedQuery = "SELECT C.vin, C.make, C.model, C.year FROM Car C, Owns O WHERE O.customer_id = " + checkResult.get(listChoice).get(0) + " AND O.car_vin = C.vin";
+			List<List<String>> carsOwnedResult = esql.executeQueryAndReturnResult(carsOwnedQuery);
+
+			boolean createNewCar = false;
+			if(carsOwnedResult.size() > 0) {
+				for(int i = 0; i < carsOwnedResult.size(); i++) {
+					String printString = i + ". " + carsOwnedResult.get(i).get(0) + ", "  +carsOwnedResult.get(i).get(1) +  ", "  + carsOwnedResult.get(i).get(2) +  ", "  + carsOwnedResult.get(i).get(3);
+					System.out.println(printString);
+						
+				}
+			
+				System.out.println("Select a car from this list? [Y/N] ");
+				String cont = in.readLine();
+				if(cont.equals("Y")) {
+					boolean listValid = false;
+					while(!listValid) {
+						try {
+							System.out.print("\tSelect the customer number: ");
+							
+							int carChoice = -1;
+							carChoice = Integer.parseInt(in.readLine());
+							if(carChoice >= 0 && carChoice < carsOwnedResult.size()) {
+								listValid = true;
+							}
+							else {
+								System.out.println("Invalid option selected, please try again");
+							}
+						 } catch(Exception e) {
+							System.out.println("Invalid option selected, please try again");
+						}
+					}
+				//	System.out.println(carChoice);
+
+				
+				}
+				else if(cont.equals("N")) {
+					createNewCar = true;	
+				}
+			
+			}
+			else {
+				System.out.println("\t" + checkResult.get(listChoice).get(1).split("\\s+")[0] + " is not registered to a car currently");
+				createNewCar = true;
+			}
+			
+			if(createNewCar == true) {
+				System.out.println("\tAdding car for " + checkResult.get(listChoice).get(1).split("\\s+")[0]);
+				AddCar(esql, Integer.parseInt(checkResult.get(listChoice).get(0)));
 			}
 			
 
-			System.out.println(listChoice);		
+			int odometer = -1;
+			isValid = false;
+			while(!isValid) {
+				System.out.println("\tEnter the odometer reading of the car: ");
+				try {
+					odometer = Integer.parseInt(in.readLine());
+                                	if(odometer >= 0) {
+                                		isValid = true;
+                                	}
+                                	else {
+                                		System.out.println("Invalid option selected, please try again");
+                                	}
+                                } catch(Exception e) {
+                                	System.out.println("Invalid option selected, please try again");
+                        	}
+	
+			}
+			isValid = false;
+			
+			String complaint = "";
+			while(!isValid) {
+				complaint = in.readLine();
+				if(complaint.length() != 0) {
+					isValid = true;
+				}
+			}
+			System.out.println(odometer);
+			System.out.println(complaint);
+			
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
 		}	
