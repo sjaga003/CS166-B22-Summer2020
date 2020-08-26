@@ -97,7 +97,7 @@ CREATE OR REPLACE FUNCTION set_close_wid()
 RETURNS "trigger" as
 $clos_wid$
 BEGIN
-	NEW.wid := nextval('clos_wid_seq');
+	NEW.wid := nextval('close_wid');
 	RETURN NEW;
 END
 $clos_wid$

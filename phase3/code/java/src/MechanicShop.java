@@ -719,7 +719,8 @@ public class MechanicShop{
 			DateTimeFormatter dt = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 			LocalDateTime dtNow = LocalDateTime.now();
 			
-			int ownsId = esql.getCurrSeqVal("owns_id");
+			List<List<String>> idTab = esql.executeQueryAndReturnResult("SELECT MAX(ownership_id) FROM owns");
+			int ownsId = Integer.parseInt(idTab.get(0).get(0));
 			String insertOwnsQuery = "SELECT O.car_vin FROM owns O WHERE O.ownership_id = " + ownsId;
 			vin = esql.executeQueryAndReturnResult(insertOwnsQuery).get(0).get(0);
 			
@@ -733,6 +734,83 @@ public class MechanicShop{
 	
 	public static void CloseServiceRequest(MechanicShop esql) throws Exception{//5
 		try {
+			boolean isValid = false;
+			int mechId = -1;
+			int srId = -1;
+			int bill = -1;
+		
+			String getSrQuery = "SELECT * FROM Service_Request S WHERE S.rid NOT IN (SELECT C.rid FROM Closed_Request C)";
+			List<List<String>> srResult = esql.executeQueryAndReturnResult(getSrQuery);
+			
+			if(srResult.size() == 0) {
+				System.out.println("All Service Requests are closed");
+				return;
+			}
+		
+			while(!isValid) {
+				try {
+				System.out.print("\tEnter mechanic id: ");
+				mechId = Integer.parseInt(in.readLine());
+				if(mechId <= 0) {
+					System.out.println("Invalid mechanic id");
+				}
+				else {
+					String checkMechIdQuery = "SELECT M.id FROM Mechanic M WHERE M.id = " + mechId;
+					List<List<String>> checkMechIdResult = esql.executeQueryAndReturnResult(checkMechIdQuery);
+					Integer.parseInt(checkMechIdResult.get(0).get(0));
+					isValid = true;	
+				}
+				} catch(Exception e) {
+					System.out.println("Invalid mechanic Id");
+				}
+			}
+			isValid = false;
+			int srChoice = -1;
+			for(int i = 0; i < srResult.size(); i++) {
+				System.out.println(i + ". WID:" + srResult.get(i).get(0) + ", RID:" + srResult.get(i).get(1) + ", MID: " + srResult.get(i).get(2) + ", " + srResult.get(i).get(3) + ", " + srResult.get(i).get(4) + ", " + srResult.get(i).get(5));
+			}
+			while(!isValid) {
+                                try {
+                                	System.out.print("\tSelect service request option: ");
+                                	srChoice = Integer.parseInt(in.readLine());
+                                	if(srChoice < 0 || srChoice >= srResult.size()) {
+                                        	System.out.println("Invalid service request option");
+                                	}
+                                	else {
+                                        	isValid = true;
+                                	}
+                                } catch(Exception e) {
+                                        System.out.println("Invalid service request option");
+                                }
+			}
+			isValid = false;
+						
+			srId = srChoice;
+			DateTimeFormatter dt = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+			LocalDateTime dtNow = LocalDateTime.now();
+			
+			System.out.print("\tAny additional comments: ");
+			String comment = in.readLine();
+			
+			while(!isValid) {
+				try {
+                                        System.out.print("\tEnter total payment due: ");
+                                        bill = Integer.parseInt(in.readLine());
+                                        if(bill <= 0) {
+                                                System.out.println("Invalid service request option");
+                                        }
+                                        else {
+                                                isValid = true;
+                                        }
+                                } catch(Exception e) {
+                                        System.out.println("Invalid service request option");
+                                }
+
+			}
+			
+			String crQuery = "INSERT INTO Closed_Request(rid, mid, date, comment, bill) VALUES (" + srId + ", " + mechId + ", \'" + dt.format(dtNow) + "\', \'" + comment + "\', " + bill + ")";
+			esql.executeUpdate(crQuery);
+			esql.executeQueryAndPrintResult("SELECT * FROM Closed_Request");
 		
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
