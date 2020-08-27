@@ -817,24 +817,51 @@ public class MechanicShop{
 	}
 	
 	public static void ListCustomersWithBillLessThan100(MechanicShop esql){//6
-			
+		try {
+			String query = "SELECT CR.date, CR.comment, CR.bill, CU.fname, CU.lname FROM Closed_Request CR, Customer CU, Service_Request SR WHERE CR.bill < 100 AND SR.rid = CR.rid AND SR.customer_id = CU.id";
+			esql.executeQueryAndPrintResult(query);	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public static void ListCustomersWithMoreThan20Cars(MechanicShop esql){//7
-		
+		try {
+			String query = "SELECT C.fname, C.lname FROM Customer C, Owns O  WHERE C.id = O.customer_id GROUP BY C.id HAVING COUNT(*) > 20";
+			esql.executeQueryAndPrintResult(query);	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public static void ListCarsBefore1995With50000Milles(MechanicShop esql){//8
-		
+		try {
+			String query = "SELECT C.make, C.model, C.year, SR.odometer FROM Car C, Service_Request SR WHERE C.vin = SR.car_vin AND C.year < 1995 AND SR.odometer < 50000";
+			esql.executeQueryAndPrintResult(query);	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public static void ListKCarsWithTheMostServices(MechanicShop esql){//9
-		//
+		try {
+			System.out.print("\tHow many cars do you want to see?: ");
+			int lim = Integer.parseInt(in.readLine());
+			String query = "SELECT C.make, C.model, C.year, SR.car_vin, COUNT(SR.car_vin) as requestsNum FROM Car C, Service_Request SR WHERE C.vin = SR.car_vin GROUP BY C.make, C.model, C.year, SR.car_vin ORDER BY requestsNum DESC LIMIT " + lim;
+			esql.executeQueryAndPrintResult(query);	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 		
 	}
 	
 	public static void ListCustomersInDescendingOrderOfTheirTotalBill(MechanicShop esql){//9
-		//
+		try {
+			String query = "SELECT C.fname, C.lname, C.id, SUM(CR.bill) total FROM Customer C, Service_Request SR, Closed_Request CR WHERE C.id = SR.customer_id AND CR.rid = SR.rid GROUP BY C.fname, C.lname, C.id ORDER BY total DESC limit 5";
+			esql.executeQueryAndPrintResult(query);	
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 		
 	}
 	
