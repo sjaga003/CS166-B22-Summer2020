@@ -87,7 +87,7 @@ BEFORE INSERT
 ON service_request FOR EACH ROW
 EXECUTE PROCEDURE set_serv_rid();
 
-/* Closed Request rid trigger */
+/* Closed Request wid trigger */
 DROP TRIGGER IF EXISTS set_close_wid on closed_request;
 DROP SEQUENCE IF EXISTS close_wid;
 

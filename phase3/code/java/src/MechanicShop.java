@@ -507,16 +507,16 @@ public class MechanicShop{
 
          		esql.executeUpdate(query);
 			
-			if(recentId >= 0) {
+			if(recentId >= 0) {//Coming from ServiceRequest
 				String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + recentId + "\', \'" + vin + "\')";
 				esql.executeUpdate(ownsQuery);
 			}
-			else {
+			else {//Coming from menu, need to get customer information only to existing customer
 				List<List<String>> checkResult = esql.executeQueryAndReturnResult("SELECT * FROM customer WHERE lname = \'alskdjfklfjafkldjadf\'");
 
-				System.out.print("\tIs this an existing customer's car? [Y/N] ");
-				
-				String cont = in.readLine();
+				//System.out.print("\tIs this an existing customer's car? [Y/N] ");
+				System.out.println("Please link this car to a customer");
+				String cont = "Y";
 
                                	if(cont.equals("Y")) {
 					while(checkResult.size() == 0) {
@@ -556,9 +556,9 @@ public class MechanicShop{
 					
 					esql.executeUpdate(ownsQuery);	
 				}
-				else {
-					System.out.println("Add customer");
-				}	
+				//else {
+				//	System.out.println("Add customer");
+				//}	
 
 			}
 					
