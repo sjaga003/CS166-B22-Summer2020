@@ -11,3 +11,4 @@ sleep 1
 
 psql -h /tmp/$LOGNAME/sockets $LOGNAME"_DB" < ../sql/create.sql
 psql -h /tmp/$LOGNAME/sockets $LOGNAME"_DB" < ../sql/triggers.sql
+psql -h /tmp/$LOGNAME/sockets $LOGNAME"_DB" < ../sql/indexing.sql

@@ -308,7 +308,6 @@ public class MechanicShop{
 	
 	public static void AddCustomer(MechanicShop esql){//1
 		try{
-         		String query = "INSERT INTO customer(fname, lname, phone, address) VALUES ";
 			String fname = "";
 			String lname = "";
 			String phone = "";
@@ -358,6 +357,8 @@ public class MechanicShop{
 				}
 			}
 			isValid = false;
+			
+         		String query = "INSERT INTO customer(fname, lname, phone, address) VALUES ";
 			String input = "(\'" + fname + "\', \'" + lname + "\', \'" + phone + "\', \'" + address + "\')";
          		query += input;
 
@@ -370,7 +371,6 @@ public class MechanicShop{
 	
 	public static void AddMechanic(MechanicShop esql){//2
 		try{
-         		String query = "INSERT INTO mechanic(fname, lname, experience) VALUES ";
 			String fname = "";
 			String lname = "";
 			String experience = "";
@@ -419,6 +419,8 @@ public class MechanicShop{
 				}
 			}	
 			isValid = false;
+
+         		String query = "INSERT INTO mechanic(fname, lname, experience) VALUES ";
 			String input = "(\'" + fname + "\', \'" + lname + "\', " + experience + ")";
          		query += input;
 
@@ -431,7 +433,6 @@ public class MechanicShop{
 	
 	public static void AddCar(MechanicShop esql, int recentId){//3
 		try{
-         		String query = "INSERT INTO car(vin, make, model, year) VALUES ";
 			String vin = "";
 			String make = "";
 			String model = "";
@@ -500,6 +501,7 @@ public class MechanicShop{
 				}
 			}	
 			isValid = false;
+         		String query = "INSERT INTO car(vin, make, model, year) VALUES ";
 			String input = "(\'" + vin + "\', \'" + make + "\', \'" + model + "\', \'" + year + "\')";
          		query += input;
 
@@ -858,7 +860,8 @@ public class MechanicShop{
 	public static void ListCustomersInDescendingOrderOfTheirTotalBill(MechanicShop esql){//9
 		try {
 			String query = "SELECT C.fname, C.lname, C.id, SUM(CR.bill) total FROM Customer C, Service_Request SR, Closed_Request CR WHERE C.id = SR.customer_id AND CR.rid = SR.rid GROUP BY C.fname, C.lname, C.id ORDER BY total DESC limit 5";
-			esql.executeQueryAndPrintResult(query);	
+			esql.executeQueryAndPrintResult(query);
+			//esql.executeQueryAndPrintResult("EXPLAIN ANALYZE SELECT * FROM CUSTOMER");	
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}

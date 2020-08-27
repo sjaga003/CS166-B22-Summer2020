@@ -82,7 +82,8 @@ END
 $serv_id$
 LANGUAGE plpgsql VOLATILE;
 
-CREATE TRIGGER set_serv_rid BEFORE INSERT
+CREATE TRIGGER set_serv_rid
+BEFORE INSERT
 ON service_request FOR EACH ROW
 EXECUTE PROCEDURE set_serv_rid();
 
@@ -103,6 +104,7 @@ END
 $clos_wid$
 LANGUAGE plpgsql VOLATILE;
 
-CREATE TRIGGER set_close_wid BEFORE INSERT
+CREATE TRIGGER set_close_wid
+BEFORE INSERT
 ON closed_request FOR EACH ROW
 EXECUTE PROCEDURE set_close_wid();
