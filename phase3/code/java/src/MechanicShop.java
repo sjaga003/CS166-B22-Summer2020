@@ -507,58 +507,51 @@ public class MechanicShop{
 
          		esql.executeUpdate(query);
 			
-			if(recentId >= 0) {//Coming from ServiceRequest
+			if(recentId > -1) {//Coming from ServiceRequest
 				String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + recentId + "\', \'" + vin + "\')";
 				esql.executeUpdate(ownsQuery);
 			}
 			else {//Coming from menu, need to get customer information only to existing customer
 				List<List<String>> checkResult = esql.executeQueryAndReturnResult("SELECT * FROM customer WHERE lname = \'alskdjfklfjafkldjadf\'");
 
-				//System.out.print("\tIs this an existing customer's car? [Y/N] ");
 				System.out.println("Please link this car to a customer");
-				String cont = "Y";
 
-                               	if(cont.equals("Y")) {
-					while(checkResult.size() == 0) {
-						System.out.print("\tEnter customer's last name: ");
-						String lname = in.readLine();
-						String queryLname = "SELECT * FROM customer WHERE lname = \'" + lname + "\'";
-						checkResult = esql.executeQueryAndReturnResult(queryLname);
-						
-						if(checkResult.size() == 0) {
-							System.out.println("Last name not found, try again");
-						}
-					}
-					for(int i = 0; i < checkResult.size(); i++) {
-                                        	String listString = i + ". " + checkResult.get(i).get(1).replaceAll("\\s", "") + " " + checkResult.get(i).get(2).replaceAll("\\s", "") + ", Phone#:" + checkResult.get(i).get(3).replaceAll("\\s", "") + ", Address:" + checkResult.get(i).get(4).replaceAll("\\s++$", "");
-                                        System.out.println(listString);
-                                	}
-				
-					int listChoice = -1;	
-					boolean listValid = false; 
-					while(!listValid) {
-						try {
-							System.out.print("\tSelect the customer number: ");
-							listChoice = Integer.parseInt(in.readLine());
-							if(listChoice >= 0 && listChoice < checkResult.size()) {
-								listValid = true;
-							}
-							else {
-								System.out.println("Invalid option selected, please try again");
-							}
-							} catch(Exception e) {
-								System.out.println("Invalid option selected, please try again");
-							}
-					}
-					System.out.println(listChoice);
-					int cid = listChoice;
-					String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + checkResult.get(cid).get(0) + "\', \'" + vin + "\')";
+				while(checkResult.size() == 0) {
+					System.out.print("\tEnter customer's last name: ");
+					String lname = in.readLine();
+					String queryLname = "SELECT * FROM customer WHERE lname = \'" + lname + "\'";
+					checkResult = esql.executeQueryAndReturnResult(queryLname);
 					
-					esql.executeUpdate(ownsQuery);	
+					if(checkResult.size() == 0) {
+						System.out.println("Last name not found, try again");
+					}
 				}
-				//else {
-				//	System.out.println("Add customer");
-				//}	
+				for(int i = 0; i < checkResult.size(); i++) {
+					String listString = i + ". " + checkResult.get(i).get(1).replaceAll("\\s", "") + " " + checkResult.get(i).get(2).replaceAll("\\s", "") + ", Phone#:" + checkResult.get(i).get(3).replaceAll("\\s", "") + ", Address:" + checkResult.get(i).get(4).replaceAll("\\s++$", "");
+				System.out.println(listString);
+				}
+			
+				int listChoice = -1;	
+				boolean listValid = false; 
+				while(!listValid) {
+					try {
+						System.out.print("\tSelect the customer number: ");
+						listChoice = Integer.parseInt(in.readLine());
+						if(listChoice >= 0 && listChoice < checkResult.size()) {
+							listValid = true;
+						}
+						else {
+							System.out.println("Invalid option selected, please try again");
+						}
+						} catch(Exception e) {
+							System.out.println("Invalid option selected, please try again");
+						}
+				}
+				System.out.println(listChoice);
+				int cid = listChoice;
+				String ownsQuery = "INSERT INTO owns (customer_id, car_vin) VALUES (\'" + checkResult.get(cid).get(0) + "\', \'" + vin + "\')";
+				
+				esql.executeUpdate(ownsQuery);	
 
 			}
 					
@@ -646,9 +639,9 @@ public class MechanicShop{
 						
 				}
 			
-				System.out.println("Select a car from this list? [Y/N] ");
+				System.out.println("Select a car from this list? [Yes/No] ");
 				String cont = in.readLine();
-				if(cont.equals("Y")) {
+				if(cont.equals("Yes")) {
 					boolean listValid = false;
 					while(!listValid) {
 						try {
@@ -671,7 +664,7 @@ public class MechanicShop{
 
 				
 				}
-				else if(cont.equals("N")) {
+				else if(cont.equals("No")) {
 					createNewCar = true;	
 				}
 			
@@ -718,8 +711,8 @@ public class MechanicShop{
 				}
 			}
 			
-			DateTimeFormatter dt = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 			LocalDateTime dtNow = LocalDateTime.now();
+			DateTimeFormatter dt = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 			
 			List<List<String>> idTab = esql.executeQueryAndReturnResult("SELECT MAX(ownership_id) FROM owns");
 			int ownsId = Integer.parseInt(idTab.get(0).get(0));
